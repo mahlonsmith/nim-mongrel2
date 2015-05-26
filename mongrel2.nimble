@@ -6,5 +6,5 @@ description   = "Simplistic handler framework for the Mongrel2 webserver."
 license       = "MIT"
 
 [Deps]
-Requires: "nim >= 0.11.0, tnetstring >= 0.1.1"
+Requires: "nim >= 0.11.0, tnetstring >= 0.1.1, zmq >= 0.2.1"
 
