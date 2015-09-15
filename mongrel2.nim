@@ -426,8 +426,8 @@ proc newM2Handler*( id: string, req_sock: string, res_sock: string ): M2Handler 
     ## to.  Nothing is put into action until the run() method is invoked.
     new( result )
     result.handler_id    = id
-    result.request_sock  = zmq.connect( "tcp://127.0.0.1:9009", PULL )
-    result.response_sock = zmq.connect( "tcp://127.0.0.1:9008", PUB )
+    result.request_sock  = zmq.connect( req_sock, PULL )
+    result.response_sock = zmq.connect( res_sock, PUB )
 
 
 proc parse_request( request: string ): M2Request =
