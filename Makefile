@@ -1,20 +1,24 @@
 
-FILES = mongrel2.nim
+FILES = src/mongrel2.nim
 
 default: development
 
 debug: ${FILES}
 	nim --assertions:on --nimcache:.cache c ${FILES}
+	@mv src/mongrel2 .
 
 development: ${FILES}
 	# can use gdb with this...
 	nim -r --debugInfo --linedir:on --define:testing --nimcache:.cache c ${FILES}
+	@mv src/mongrel2 .
 
 debugger: ${FILES}
 	nim --debugger:on --nimcache:.cache c ${FILES}
+	@mv src/mongrel2 .
 
 release: ${FILES}
 	nim -d:release --opt:speed --nimcache:.cache c ${FILES}
+	@mv src/mongrel2 .
 
 docs:
 	nim doc ${FILES}

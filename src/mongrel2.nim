@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Mahlon E. Smith <mahlon@martini.nu>
+# Copyright (c) 2015-2018, Mahlon E. Smith <mahlon@martini.nu>
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -504,7 +504,7 @@ proc `[]`*( request: M2Request, label: string ): string =
     for header in request.headers:
         if cmpIgnoreCase( label, header.name ) == 0:
             return header.value
-    return nil
+    return ""
 
 
 proc is_disconnect*( request: M2Request ): bool =
@@ -521,7 +521,7 @@ proc `[]`*( response: M2Response, label: string ): string =
     for header in response.headers:
         if cmpIgnoreCase( label, header.name ) == 0:
             return header.value
-    return nil
+    return ""
 
 
 proc `[]=`*( response: M2Response, name: string, value: string ) =
@@ -548,14 +548,15 @@ proc extend*( response: M2Response, filter: string ) =
 proc add_extended_data*( response: M2Response, data: varargs[string, `$`] ) =
     ## Attach filter arguments to the extended response.  Arguments should
     ## be coercible into strings.
-    if isNil( response.ex_data ): response.ex_data = @[]
+    # if isNil( response.ex_data ): response.ex_data = @[]
+    # response.ex_data = @[]
     for arg in data:
         response.ex_data.add( arg )
 
 
 proc is_extended*( response: M2Response ): bool =
     ## Predicate method to determine if a response is extended.
-    return not isNil( response.extended )
+    return not ( response.extended == "" )
 
 
 proc broadcast*[T]( response: M2Response, ids: openarray[T] ) =
@@ -585,7 +586,7 @@ proc format( response: M2Response ): string =
 
         # rest are the filter arguments, if any.
         #
-        if not isNil( response.ex_data ):
+        if response.is_extended:
             for data in response.ex_data:
                 tnet_array.add( newTNetstringString(data) )
 
@@ -595,7 +596,7 @@ proc format( response: M2Response ): string =
     else:
         # Regular HTTP request/response cycle.
         #
-        if isNil( response.body ):
+        if response.body == "":
             response.body = HTTPCODE[ response.status ].desc
             response[ "Content-Length" ] = $( response.body.len )
         else:
@@ -725,8 +726,8 @@ when isMainModule:
 
     # Automatic body if none is specified
     #
-    res.extended = nil
-    res.body     = nil
+    res.extended = ""
+    res.body     = ""
     res.status   = HTTP_CREATED
     discard res.format
     doAssert( res.body == "Created" )

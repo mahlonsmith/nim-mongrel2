@@ -1,10 +1,17 @@
-[Package]
-name          = "mongrel2"
-version       = "0.1.0"
+
+# Package
+
+version       = "0.1.1"
 author        = "Mahlon E. Smith <mahlon@martini.nu>"
 description   = "Simplistic handler framework for the Mongrel2 webserver."
 license       = "MIT"
+installExt    = @["mongrel2"]
+srcDir        = "src"
 
-[Deps]
-Requires: "nim >= 0.11.0, tnetstring >= 0.1.1, zmq >= 0.2.1"
+
+# Dependencies
+
+requires "nim >= 0.19.0"
+requires "tnetstring >= 0.1.1"
+requires "zmq >= 0.2.1"
 

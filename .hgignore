@@ -1,4 +1,6 @@
 syntax: glob
 .cache
-tnetstring
+mongrel2
+handler
+src/mongrel2
 *.html
