@@ -5,7 +5,7 @@ version       = "0.1.1"
 author        = "Mahlon E. Smith <mahlon@martini.nu>"
 description   = "Simplistic handler framework for the Mongrel2 webserver."
 license       = "MIT"
-installExt    = @["mongrel2"]
+installExt    = @["nim"]
 srcDir        = "src"
 
 
