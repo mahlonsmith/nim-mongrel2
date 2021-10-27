@@ -1,5 +1,6 @@
+# vim: set et sta sw=4 ts=4 :
 #
-# Copyright (c) 2015-2018, Mahlon E. Smith <mahlon@martini.nu>
+# Copyright (c) 2015-2021, Mahlon E. Smith <mahlon@martini.nu>
 # All rights reserved.
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -136,18 +137,18 @@
 
 
 import
-    json,
-    strutils,
-    tables,
-    times,
+    std/json,
+    std/strutils,
+    std/tables,
+    std/times,
     tnetstring,
     zmq
 
 type
     M2Handler* = ref object of RootObj
         handler_id:         string
-        request_sock:       TConnection
-        response_sock:      TConnection
+        request_sock:       ZConnection
+        response_sock:      ZConnection
         action*:            proc ( request: M2Request ): M2Response
         disconnect_action*: proc ( request: M2Request )
 
@@ -620,6 +621,11 @@ proc handle_default( request: M2Request ): M2Response =
     result.body              = DEFAULT_CONTENT
 
 
+proc handle_disconnect( request: M2Request ): void =
+    ## This is the default disconnect handler, if the caller didn't install one.
+    return
+
+
 proc run*( handler: M2Handler ) {. noreturn .} =
     ## Enter the request loop conversation with Mongrel2.
     ## If an action() proc is attached, run that to generate
@@ -636,9 +642,9 @@ proc run*( handler: M2Handler ) {. noreturn .} =
         # disconnect_action.
         #
         if request.is_disconnect:
-            if not isNil( handler.disconnect_action ):
-                discard handler.disconnect_action
-            continue
+            if isNil( handler.disconnect_action ):
+                handler.disconnect_action = handle_disconnect
+            handler.disconnect_action( request )
 
         # Defer regular response content to the handler action.
         #
@@ -659,7 +665,7 @@ proc run*( handler: M2Handler ) {. noreturn .} =
         ]
 
         echo "$1: $2 --> $3 $4" % [
-            $(get_localtime(getTime())),
+            $(get_time()),
             info,
             $( response.status ),
             HTTPCODE[ response.status ].label
